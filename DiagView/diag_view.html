@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AlchemyGoldOS — Module Diagnostics</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #07070f;
+      color: #e2e8f0;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      overflow: hidden;
+    }
+
+    #graph { width: 100vw; height: 100vh; }
+
+    /* ── Top bar ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      padding: 10px 20px;
+      background: rgba(7,7,15,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; gap: 16px;
+      z-index: 100;
+    }
+    #topbar h1 { font-size: 13px; font-weight: 600; color: #a78bfa; letter-spacing: 0.05em; }
+    #topbar .sep { color: rgba(255,255,255,0.15); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .dot-ok      { background: #22c55e; box-shadow: 0 0 6px #22c55e88; }
+    .dot-warn    { background: #f59e0b; box-shadow: 0 0 6px #f59e0b88; }
+    .dot-err     { background: #ef4444; box-shadow: 0 0 6px #ef444488; }
+    .dot-grey    { background: #475569; }
+    #summary { font-size: 11px; color: #64748b; margin-left: auto; }
+    #last-update { font-size: 11px; color: #334155; }
+
+    /* ── Legend ── */
+    #legend {
+      position: fixed; bottom: 20px; left: 20px;
+      background: rgba(7,7,15,0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 11px;
+      z-index: 100;
+    }
+    #legend .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    #legend .row:last-child { margin-bottom: 0; }
+
+    /* ── Tooltip ── */
+    #tooltip {
+      position: fixed;
+      pointer-events: none;
+      background: rgba(7,7,15,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 12px;
+      max-width: 280px;
+      z-index: 200;
+      display: none;
+    }
+    #tooltip .tt-name  { font-size: 14px; font-weight: 700; color: #f8fafc; margin-bottom: 4px; }
+    #tooltip .tt-desc  { color: #94a3b8; margin-bottom: 8px; line-height: 1.4; }
+    #tooltip .tt-tags  { display: flex; flex-wrap: wrap; gap: 4px; }
+    #tooltip .tag      { background: rgba(167,139,250,0.15); color: #a78bfa; border-radius: 4px; padding: 2px 7px; font-size: 10px; }
+    #tooltip .tt-health { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+    #tooltip .health-row { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #64748b; }
+
+    /* ── Controls ── */
+    #controls {
+      position: fixed; bottom: 20px; right: 20px;
+      display: flex; flex-direction: column; gap: 8px;
+      z-index: 100;
+    }
+    button {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #94a3b8;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 11px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    button:hover { background: rgba(255,255,255,0.1); color: #e2e8f0; }
+  </style>
+</head>
+<body>
+
+<div id="topbar">
+  <h1>⬡ AlchemyGoldOS</h1>
+  <span class="sep">|</span>
+  <span id="health-summary" style="font-size:12px; color:#64748b">Loading…</span>
+  <span id="summary"></span>
+  <span id="last-update"></span>
+</div>
+
+<div id="graph"></div>
+
+<div id="legend">
+  <div class="row"><span class="status-dot dot-ok"></span> Healthy</div>
+  <div class="row"><span class="status-dot dot-warn"></span> Degraded</div>
+  <div class="row"><span class="status-dot dot-err"></span> Down</div>
+  <div class="row"><span class="status-dot dot-grey"></span> No probe</div>
+</div>
+
+<div id="controls">
+  <button onclick="Graph.zoomToFit(800)">Fit view</button>
+  <button onclick="toggleMode()">Toggle 2D/3D</button>
+  <button onclick="loadData()">Refresh</button>
+</div>
+
+<div id="tooltip"></div>
+
+<script src="https://unpkg.com/3d-force-graph@1/dist/3d-force-graph.min.js"></script>
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const BACKEND = window.ALCHEMY_BACKEND || 'http://localhost:8000';
+const REFRESH_MS = 15000;  // auto-refresh every 15s
+
+// ── Colour mapping ──────────────────────────────────────────────────────────
+const STATUS_COLORS = {
+  ok:       '#22c55e',
+  healthy:  '#22c55e',
+  degraded: '#f59e0b',
+  warn:     '#f59e0b',
+  warning:  '#f59e0b',
+  error:    '#ef4444',
+  down:     '#ef4444',
+  unknown:  '#475569',
+  none:     '#475569',
+};
+
+function statusColor(status) {
+  return STATUS_COLORS[(status || 'none').toLowerCase()] || '#475569';
+}
+
+// ── Tag → group → colour for nodes without health data ──────────────────────
+const TAG_COLORS = {
+  llm: '#a78bfa', streaming: '#a78bfa', ollama: '#a78bfa',
+  websocket: '#38bdf8', realtime: '#38bdf8', relay: '#38bdf8',
+  security: '#fb7185', mcp: '#fb7185',
+  'code-analysis': '#34d399', reuse: '#34d399', scanner: '#34d399',
+  diagnostics: '#f472b6', visualization: '#f472b6',
+  tasks: '#fbbf24', planning: '#fbbf24', queue: '#fbbf24',
+  git: '#94a3b8', utility: '#94a3b8',
+};
+
+function moduleColor(mod, health) {
+  if (health) return statusColor(health.status);
+  const firstTag = (mod.tags || [])[0];
+  return TAG_COLORS[firstTag] || '#475569';
+}
+
+// ── Graph setup ─────────────────────────────────────────────────────────────
+let is3D = true;
+const elem = document.getElementById('graph');
+
+const Graph = ForceGraph3D()(elem)
+  .backgroundColor('#07070f')
+  .nodeLabel('')
+  .nodeColor(n => n.color)
+  .nodeVal(n => n.val)
+  .nodeOpacity(0.92)
+  .linkColor(() => 'rgba(255,255,255,0.06)')
+  .linkWidth(0.8)
+  .linkDirectionalParticles(1)
+  .linkDirectionalParticleWidth(1.2)
+  .linkDirectionalParticleColor(() => 'rgba(167,139,250,0.5)')
+  .onNodeHover(handleHover)
+  .onNodeClick(handleClick);
+
+// ── Data loading ─────────────────────────────────────────────────────────────
+async function loadData() {
+  const [modulesRes, diagRes] = await Promise.allSettled([
+    fetch(`${BACKEND}/variables/modules`),
+    fetch(`${BACKEND}/diagnostics`),
+  ]);
+
+  const modulesData = modulesRes.status === 'fulfilled' && modulesRes.value.ok
+    ? await modulesRes.value.json() : { modules: [] };
+
+  const diagData = diagRes.status === 'fulfilled' && diagRes.value.ok
+    ? await diagRes.value.json() : null;
+
+  // Build health map: module_name → {status, details}
+  const healthMap = {};
+  if (diagData?.modules) {
+    for (const [name, info] of Object.entries(diagData.modules)) {
+      healthMap[name] = info;
+    }
+  }
+
+  buildGraph(modulesData.modules || [], healthMap);
+  updateTopbar(modulesData.modules || [], healthMap, diagData);
+
+  document.getElementById('last-update').textContent =
+    'Updated ' + new Date().toLocaleTimeString();
+}
+
+// ── Graph construction ────────────────────────────────────────────────────────
+function buildGraph(modules, healthMap) {
+  const internalMods = modules.filter(m => m.source === 'self');
+
+  // Nodes
+  const nodes = internalMods.map(mod => {
+    const health = healthMap[mod.name];
+    return {
+      id: mod.name,
+      name: mod.name,
+      desc: mod.description,
+      tags: mod.tags || [],
+      language: mod.language,
+      health: health || null,
+      color: moduleColor(mod, health),
+      val: health ? (health.status === 'ok' || health.status === 'healthy' ? 6 : 8) : 5,
+      module: mod,
+    };
+  });
+
+  // Edges: connect nodes sharing a tag
+  const tagToNodes = {};
+  for (const n of nodes) {
+    for (const tag of n.tags) {
+      tagToNodes[tag] = tagToNodes[tag] || [];
+      tagToNodes[tag].push(n.id);
+    }
+  }
+
+  const edgeSet = new Set();
+  const links = [];
+  for (const [tag, ids] of Object.entries(tagToNodes)) {
+    if (ids.length < 2) continue;
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        const key = [ids[i], ids[j]].sort().join('--');
+        if (!edgeSet.has(key)) {
+          edgeSet.add(key);
+          links.push({ source: ids[i], target: ids[j], tag });
+        }
+      }
+    }
+  }
+
+  Graph.graphData({ nodes, links });
+
+  document.getElementById('summary').textContent =
+    `${nodes.length} modules · ${links.length} connections`;
+}
+
+// ── Top bar ──────────────────────────────────────────────────────────────────
+function updateTopbar(modules, healthMap, diagData) {
+  const internal = modules.filter(m => m.source === 'self');
+  const probed = Object.values(healthMap);
+  const ok   = probed.filter(h => ['ok','healthy'].includes((h.status||'').toLowerCase())).length;
+  const warn = probed.filter(h => ['degraded','warn','warning'].includes((h.status||'').toLowerCase())).length;
+  const err  = probed.filter(h => ['error','down'].includes((h.status||'').toLowerCase())).length;
+
+  let html = '';
+  if (probed.length === 0) {
+    html = `<span style="color:#475569">No /diagnostics endpoint yet — showing module map only</span>`;
+  } else {
+    if (ok)   html += `<span class="status-dot dot-ok"></span> ${ok} healthy &nbsp;`;
+    if (warn) html += `<span class="status-dot dot-warn"></span> ${warn} degraded &nbsp;`;
+    if (err)  html += `<span class="status-dot dot-err"></span> ${err} down`;
+  }
+  document.getElementById('health-summary').innerHTML = html;
+}
+
+// ── Tooltip ──────────────────────────────────────────────────────────────────
+function handleHover(node, prevNode) {
+  const tt = document.getElementById('tooltip');
+  if (!node) { tt.style.display = 'none'; return; }
+
+  const tagsHtml = (node.tags || [])
+    .map(t => `<span class="tag">${t}</span>`).join('');
+
+  let healthHtml = '';
+  if (node.health) {
+    const col = statusColor(node.health.status);
+    healthHtml = `
+      <div class="tt-health">
+        <div class="health-row">
+          <span class="status-dot" style="background:${col};box-shadow:0 0 6px ${col}88"></span>
+          ${node.health.status}
+          ${node.health.latency_ms ? ` · ${node.health.latency_ms}ms` : ''}
+        </div>
+        ${node.health.detail ? `<div style="color:#475569;margin-top:4px;font-size:10px">${node.health.detail}</div>` : ''}
+      </div>`;
+  } else {
+    healthHtml = `<div class="tt-health"><div class="health-row"><span class="status-dot dot-grey"></span>No health probe</div></div>`;
+  }
+
+  tt.innerHTML = `
+    <div class="tt-name">${node.name}</div>
+    <div class="tt-desc">${node.desc || ''}</div>
+    <div class="tt-tags">${tagsHtml}</div>
+    ${healthHtml}
+  `;
+  tt.style.display = 'block';
+
+  document.addEventListener('mousemove', moveTooltip, { once: false });
+}
+
+function moveTooltip(e) {
+  const tt = document.getElementById('tooltip');
+  tt.style.left = (e.clientX + 16) + 'px';
+  tt.style.top  = (e.clientY + 16) + 'px';
+}
+
+function handleClick(node) {
+  Graph.cameraPosition(
+    { x: node.x * 1.5, y: node.y * 1.5, z: node.z * 1.5 },
+    node,
+    800
+  );
+}
+
+// ── 2D/3D toggle ─────────────────────────────────────────────────────────────
+function toggleMode() {
+  // Reload with 2D or 3D graph lib (simplest approach: reload with hash)
+  window.location.hash = is3D ? '2d' : '3d';
+  window.location.reload();
+}
+
+if (window.location.hash === '#2d') {
+  // Could load ForceGraph2D here — for now just stay 3D
+}
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+loadData();
+setInterval(loadData, REFRESH_MS);
+</script>
+</body>
+</html>

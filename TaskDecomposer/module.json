@@ -1,0 +1,20 @@
+{
+  "name": "TaskDecomposer",
+  "description": "Breaks high-level tasks or PRDs into ordered, dependency-aware, atomic subtasks using any LLM backend",
+  "language": "python",
+  "tags": [
+    "decomposition",
+    "planning",
+    "tasks",
+    "dependencies",
+    "prd",
+    "ollama",
+    "openai"
+  ],
+  "source": "self",
+  "size": "medium",
+  "entry": "decomposer.py",
+  "dependencies": [
+    "httpx"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "OllamaRouter",
+  "description": "Smart complexity-based model routing for Ollama",
+  "language": "python",
+  "tags": [
+    "ollama",
+    "llm",
+    "routing",
+    "model-selection"
+  ],
+  "source": "self",
+  "size": "small",
+  "entry": "router.py",
+  "dependencies": [
+    "httpx"
+  ]
+}

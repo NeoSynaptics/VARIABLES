@@ -1,0 +1,9 @@
+{
+  "name": "ReuseScanner",
+  "description": "Detects reusable functions across local repos. Scores each function 0-4 (pure, compact, annotated, cross-repo). Zero external dependencies.",
+  "language": "python",
+  "tags": ["code-analysis", "reuse", "refactor", "alchemy-tools", "scanner"],
+  "source": "self",
+  "size": "medium",
+  "entry": "scanner.py"
+}

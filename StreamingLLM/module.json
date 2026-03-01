@@ -1,0 +1,19 @@
+{
+  "name": "StreamingLLM",
+  "description": "SSE streaming server (Ollama/OpenAI) + frontend client",
+  "language": "python+typescript",
+  "tags": [
+    "llm",
+    "streaming",
+    "sse",
+    "ollama",
+    "openai"
+  ],
+  "source": "self",
+  "size": "small",
+  "entry": "stream_server.py",
+  "dependencies": [
+    "fastapi",
+    "httpx"
+  ]
+}

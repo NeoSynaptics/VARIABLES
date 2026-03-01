@@ -1,0 +1,60 @@
+{
+  "always_accept": [
+    "Read",
+    "Glob",
+    "Grep",
+    "WebSearch",
+    "WebFetch",
+    "TodoWrite",
+    "AskUserQuestion"
+  ],
+  "safe_bash_patterns": [
+    "^ls\b",
+    "^pwd$",
+    "^echo\b",
+    "^cat\b",
+    "^head\b",
+    "^tail\b",
+    "^git\\s+(status|log|diff|branch|show)\b",
+    "^npm\\s+(list|ls|outdated|audit)\b",
+    "^python\\s+--version",
+    "^node\\s+--version",
+    "^wc\b",
+    "^which\b",
+    "^whoami$",
+    "^date$"
+  ],
+  "always_deny_patterns": [
+    "rm\\s+-rf\\s+/(?!tmp)",
+    "rm\\s+-rf\\s+~",
+    "format\\s+[A-Z]:",
+    "DROP\\s+(?:DATABASE|TABLE)",
+    "git\\s+push\\s+--force\\s+.*main",
+    "git\\s+push\\s+--force\\s+.*master",
+    "mkfs\\.",
+    "dd\\s+if=.*of=/dev/"
+  ],
+  "protected_paths": [
+    ".env",
+    "credentials",
+    "secret",
+    ".ssh/",
+    "id_rsa",
+    ".gpg",
+    "token",
+    "password"
+  ],
+  "review_bash_patterns": [
+    "^rm\b",
+    "^git\\s+push",
+    "^git\\s+reset",
+    "^git\\s+checkout\\s+--",
+    "^git\\s+clean",
+    "^npm\\s+(install|uninstall|publish)",
+    "^pip\\s+install",
+    "^curl\b.*\\|.*sh",
+    "^chmod\b",
+    "^chown\b",
+    "^kill\b"
+  ]
+}

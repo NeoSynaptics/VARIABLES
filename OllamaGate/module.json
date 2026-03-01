@@ -1,0 +1,20 @@
+{
+  "name": "OllamaGate",
+  "description": "AI gatekeeper for Claude Code \u2014 Ollama 14B reviews permissions and decides accept/deny/other",
+  "language": "python+typescript",
+  "tags": [
+    "ollama",
+    "claude-code",
+    "security",
+    "gatekeeper",
+    "permissions",
+    "auto-accept"
+  ],
+  "source": "self",
+  "size": "medium",
+  "entry": "gate.py",
+  "dependencies": [
+    "httpx"
+  ],
+  "unique": "First AI-powered live permission reviewer for Claude Code. No public repo does this."
+}

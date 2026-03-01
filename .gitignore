@@ -1,0 +1,33 @@
+# External repos — referenced in external.json, not stored here
+D3ForceGraph/
+DeepMapping/
+InjectGuard/
+LocalRAG/
+MotionTrack/
+TreeSitterLight/
+Agno/
+AIOS/
+OpenHands/
+LocalSend/
+Syncthing/
+ActivityWatch/
+Langfuse/
+LangGraph/
+Plane/
+Supervision/
+RoboflowSports/
+AI4Animation/
+CodeServer/
+CadQuery/
+build123d/
+OllamaMCPBridge/
+ToolBridge/
+LocalLLMCodeReview/
+ClaudeCodeHooks/
+
+# Auto-generated
+index.json
+
+# Python
+__pycache__/
+*.pyc

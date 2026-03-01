@@ -1,0 +1,10 @@
+{
+  "name": "DiagView",
+  "description": "3D force-graph visualization of AlchemyGoldOS module health. Nodes = modules, colors = health status. Reads /diagnostics + /variables/modules.",
+  "language": "html+javascript",
+  "tags": ["diagnostics", "visualization", "3d", "force-graph", "health"],
+  "source": "self",
+  "size": "small",
+  "entry": "diag_view.html",
+  "uses_cdn": "https://unpkg.com/3d-force-graph"
+}
