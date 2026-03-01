@@ -1,0 +1,98 @@
+<head>
+  <style> body { margin: 0; } </style>
+
+  <script type="importmap">{ "imports": {
+    "react": "https://esm.sh/react",
+    "react-dom": "https://esm.sh/react-dom/client"
+  }}</script>
+
+<!--  <script type="module">import * as React from 'react'; window.React = React;</script>-->
+<!--  <script src="../../src/packages/react-force-graph-2d/dist/react-force-graph-2d.js" defer></script>-->
+</head>
+
+<body>
+  <div id="graph"></div>
+
+  <script src="//cdn.jsdelivr.net/npm/@babel/standalone"></script>
+  <script type="text/jsx" data-type="module">
+    import ForceGraph2D from 'https://esm.sh/react-force-graph-2d?external=react';
+    import React, { useState, useEffect, useRef } from 'react';
+    import { createRoot } from 'react-dom';
+    import { csvParse } from 'https://esm.sh/d3-dsv';
+    import { forceCollide } from 'https://esm.sh/d3-force-3d';
+    import { GUI } from 'https://esm.sh/dat.gui';
+
+    const useForceUpdate = () => {
+      const setToggle = useState(false)[1];
+      return () => setToggle(b => !b);
+    };
+
+    const ForceTree = ({ data }) => {
+      const fgRef = useRef();
+
+      const [controls] = useState({ 'DAG Orientation': 'td'});
+      const forceUpdate = useForceUpdate();
+
+      useEffect(() => {
+        // add controls GUI
+        const gui = new GUI();
+        gui.add(controls, 'DAG Orientation', ['td', 'bu', 'lr', 'rl', 'radialout', 'radialin', null])
+          .onChange(forceUpdate);
+      }, []);
+
+      useEffect(() => {
+        // add collision force
+        fgRef.current.d3Force('collision', forceCollide(node => Math.sqrt(100 / (node.level + 1))));
+      }, []);
+
+      return <ForceGraph2D
+        ref={fgRef}
+        graphData={data}
+        dagMode={controls['DAG Orientation']}
+        dagLevelDistance={300}
+        backgroundColor="#101020"
+        linkColor={() => 'rgba(255,255,255,0.2)'}
+        nodeRelSize={1}
+        nodeId="path"
+        nodeVal={node => 100 / (node.level + 1)}
+        nodeLabel="path"
+        nodeAutoColorBy="module"
+        linkDirectionalParticles={2}
+        linkDirectionalParticleWidth={2}
+        d3VelocityDecay={0.3}
+      />;
+    };
+
+    fetch('../datasets/d3-dependencies.csv')
+      .then(r => r.text())
+      .then(csvParse)
+      .then(data => {
+        const nodes = [], links = [];
+        data.forEach(({ size, path }) => {
+          const levels = path.split('/'),
+            level = levels.length - 1,
+            module = level > 0 ? levels[1] : null,
+            leaf = levels.pop(),
+            parent = levels.join('/');
+
+          const node = {
+            path,
+            leaf,
+            module,
+            size: +size || 20,
+            level
+          };
+
+          nodes.push(node);
+
+          if (parent) {
+            links.push({source: parent, target: path, targetNode: node});
+          }
+        });
+
+        createRoot(document.getElementById('graph')).render(
+          <ForceTree data={{ nodes, links }} />
+        );
+      });
+  </script>
+</body>

@@ -1,0 +1,36 @@
+<head>
+  <style> body { margin: 0; } </style>
+
+  <script type="importmap">{ "imports": {
+    "react": "https://esm.sh/react",
+    "react-dom": "https://esm.sh/react-dom/client"
+  }}</script>
+
+  <script src="//cdn.jsdelivr.net/npm/aframe"></script>
+</head>
+
+<body>
+  <div id="graph"></div>
+
+  <script src="//cdn.jsdelivr.net/npm/@babel/standalone"></script>
+  <script type="text/jsx" data-type="module">
+    import { ForceGraph2D, ForceGraph3D, ForceGraphVR } from 'https://esm.sh/react-force-graph?external=react';
+    import React from 'react';
+    import { createRoot } from 'react-dom';
+    import { genRandomTree } from '../datasets/random-data.js';
+
+    const comps = [ForceGraph2D, ForceGraph3D, ForceGraphVR];
+    const compWidth = window.innerWidth / comps.length;
+
+    createRoot(document.getElementById('graph')).render(
+      <div style={{ display: 'flex' }}>
+        {comps.map(Comp =>
+          <Comp
+            width={compWidth}
+            graphData={genRandomTree()}
+          />
+        )}
+      </div>
+    );
+  </script>
+</body>
