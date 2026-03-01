@@ -1,5 +1,0 @@
-numpy
-scipy
-cython
-cython_bbox
-lap
