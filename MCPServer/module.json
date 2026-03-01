@@ -1,0 +1,16 @@
+{
+  "name": "MCPServer",
+  "description": "Model Context Protocol server over stdio (JSON-RPC 2.0)",
+  "language": "python",
+  "tags": [
+    "mcp",
+    "json-rpc",
+    "stdio",
+    "llm-tools",
+    "protocol"
+  ],
+  "source": "self",
+  "size": "medium",
+  "entry": "server.py",
+  "dependencies": []
+}

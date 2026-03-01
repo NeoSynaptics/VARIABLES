@@ -1,0 +1,16 @@
+{
+  "name": "DiffEngine",
+  "description": "Unified diff analysis, classification, and conflict detection",
+  "language": "python",
+  "tags": [
+    "diff",
+    "git",
+    "merge",
+    "conflict-detection",
+    "code-review"
+  ],
+  "source": "self",
+  "size": "medium",
+  "entry": "differ.py",
+  "dependencies": []
+}

@@ -1,0 +1,15 @@
+{
+  "name": "SparseCheckout",
+  "description": "Git sparse checkout for pulling individual VARIABLES modules",
+  "language": "python",
+  "tags": [
+    "git",
+    "sparse-checkout",
+    "module-pull",
+    "cli"
+  ],
+  "source": "self",
+  "size": "small",
+  "entry": "sparse.py",
+  "dependencies": []
+}

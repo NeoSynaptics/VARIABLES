@@ -1,0 +1,16 @@
+{
+  "name": "TaskQueue",
+  "description": "Async FIFO task queue with pause/resume and priority support",
+  "language": "python",
+  "tags": [
+    "async",
+    "queue",
+    "tasks",
+    "fifo",
+    "concurrency"
+  ],
+  "source": "self",
+  "size": "medium",
+  "entry": "queue.py",
+  "dependencies": []
+}

@@ -1,0 +1,152 @@
+[
+  {
+    "name": "DeepMapping",
+    "url": "https://github.com/nicolo-ribaudo/gitnexus",
+    "stars": "1k+",
+    "why": "Interactive knowledge graph from any repo \u2014 AST parsing, force graph visualization, code search"
+  },
+  {
+    "name": "D3ForceGraph",
+    "url": "https://github.com/vasturiano/react-force-graph",
+    "stars": "2.3k",
+    "why": "3D force-directed graph visualization \u2014 used for dependency and knowledge graphs"
+  },
+  {
+    "name": "InjectGuard",
+    "url": "https://github.com/deadbits/vigil-llm",
+    "stars": "900+",
+    "why": "LLM prompt injection detection \u2014 YARA rules, vector similarity, sentiment analysis"
+  },
+  {
+    "name": "LocalRAG",
+    "url": "https://github.com/Dicklesworthstone/local-rag",
+    "stars": "500+",
+    "why": "Local RAG pipeline \u2014 embeddings, vector store, retrieval chains, no cloud dependency"
+  },
+  {
+    "name": "MotionTrack",
+    "url": "https://github.com/ifzhang/ByteTrack",
+    "stars": "4.5k",
+    "why": "Multi-object tracking \u2014 Kalman filter + byte-level association, used in VaultSpeed"
+  },
+  {
+    "name": "TreeSitterLight",
+    "url": "https://github.com/galtay/tree-sitter-light",
+    "stars": "200+",
+    "why": "Lightweight tree-sitter wrapper \u2014 AST parsing for code analysis"
+  },
+  {
+    "name": "Agno",
+    "url": "https://github.com/agno-agi/agno",
+    "stars": "38k",
+    "why": "Full agent framework \u2014 tool calling, memory, multi-model orchestration"
+  },
+  {
+    "name": "LocalSend",
+    "url": "https://github.com/localsend/localsend",
+    "stars": "75k",
+    "why": "Cross-device file sharing \u2014 AirDrop alternative, local network only"
+  },
+  {
+    "name": "Syncthing",
+    "url": "https://github.com/syncthing/syncthing",
+    "stars": "67k",
+    "why": "Continuous file synchronization \u2014 decentralized, encrypted, cross-platform"
+  },
+  {
+    "name": "OpenHands",
+    "url": "https://github.com/All-Hands-AI/OpenHands",
+    "stars": "65k",
+    "why": "AI dev agent \u2014 autonomous coding, sandboxed execution, tool use"
+  },
+  {
+    "name": "AIOS",
+    "url": "https://github.com/agiresearch/AIOS",
+    "stars": "5k",
+    "why": "Research OS for AI agents \u2014 scheduling, memory management, tool integration"
+  },
+  {
+    "name": "CadQuery",
+    "url": "https://github.com/CadQuery/cadquery",
+    "stars": "4.6k",
+    "why": "Python parametric CAD \u2014 programmatic 3D modeling, STEP/STL export"
+  },
+  {
+    "name": "build123d",
+    "url": "https://github.com/gumyr/build123d",
+    "stars": "1.4k",
+    "why": "Modern CadQuery successor \u2014 cleaner API, better type hints"
+  },
+  {
+    "name": "RoboflowSports",
+    "url": "https://github.com/roboflow/sports",
+    "stars": "3k",
+    "why": "Sports CV toolkit \u2014 player detection, tracking, field homography"
+  },
+  {
+    "name": "RoboflowSupervision",
+    "url": "https://github.com/roboflow/supervision",
+    "stars": "36k",
+    "why": "CV utilities \u2014 annotation, tracking, zone counting, model-agnostic"
+  },
+  {
+    "name": "AI4Animation",
+    "url": "https://github.com/sebastianstarke/AI4Animation",
+    "stars": "8.5k",
+    "why": "AI-driven character animation \u2014 Unity, motion matching, deep learning"
+  },
+  {
+    "name": "Plane",
+    "url": "https://github.com/makeplane/plane",
+    "stars": "45k",
+    "why": "Jira/Linear replacement \u2014 issue tracking, cycles, modules, self-hosted"
+  },
+  {
+    "name": "ActivityWatch",
+    "url": "https://github.com/ActivityWatch/activitywatch",
+    "stars": "17k",
+    "why": "Local time tracking \u2014 automatic, privacy-first, extensible watchers"
+  },
+  {
+    "name": "CodeServer",
+    "url": "https://github.com/coder/code-server",
+    "stars": "71k",
+    "why": "VS Code in the browser \u2014 remote development, tablet/phone access"
+  },
+  {
+    "name": "LangGraph",
+    "url": "https://github.com/langchain-ai/langgraph",
+    "stars": "10k+",
+    "why": "Stateful agent orchestration \u2014 graph-based workflows, checkpointing"
+  },
+  {
+    "name": "Langfuse",
+    "url": "https://github.com/langfuse/langfuse",
+    "stars": "8k+",
+    "why": "LLM observability \u2014 tracing, evaluation, prompt management"
+  },
+  {
+    "name": "ToolBridge",
+    "url": "https://github.com/nicepkg/toolbridge",
+    "stars": "200+",
+    "why": "MCP tool bridge \u2014 connect any CLI tool to LLM agents via MCP"
+  },
+  {
+    "name": "OllamaMCPBridge",
+    "url": "https://github.com/nicepkg/ollama-mcp-bridge",
+    "stars": "300+",
+    "why": "Ollama to MCP bridge \u2014 expose local models as MCP-compatible tools"
+  },
+  {
+    "name": "ClaudeCodeHooks",
+    "url": "https://github.com/anthropics/claude-code",
+    "stars": "30k+",
+    "why": "Claude Code hooks reference \u2014 PreToolUse, PostToolUse, session hooks"
+  },
+  {
+    "name": "KintsugiAgent",
+    "url": "https://github.com/kintsugi-ai/kintsugi-agent",
+    "stars": "500+",
+    "why": "Self-healing agent \u2014 error recovery, retry strategies, graceful degradation"
+  }
+]
